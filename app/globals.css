@@ -111,7 +111,7 @@
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: var(--scrollbar-radius);
-  border: 2px solid var(--scrollbar-track);//////////////////////////////////////////////////////////////
+  border: 2px solid var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb:hover {
