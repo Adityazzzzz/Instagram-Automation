@@ -14,7 +14,7 @@ model User{
   email         String @unique
   firstname     String? @unique
   lastname      String? @unique
-  createdAt     Datetime @default(now())
+  createdAt     DateTime @default(now())
   subscription  Subscription?
   integrations  Integrations[]
   automations   Automation[]
@@ -24,29 +24,101 @@ model Subscription{
   id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   User        User? @relation(fields:[userId], references:[id], onDelete:Cascade)
   userId      String? @db.Uuid
-  createdAt   Datetime @default(now())
+  createdAt   DateTime @default(now())
   plan        SUBSCRIPTION_PLAN @default(FREE)
-  updatedAt   Datetime @default(now())
+  updatedAt   DateTime @default(now())
   customerId  String? @unique
 }
 
 model Integrations{
   id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        INTEGRATIONS @default(INSTAGRAM)
-  createdAt   Datetime @default(now())
+  createdAt   DateTime @default(now())
   User        User? @relation(fields:[userId], references:[id], onDelete:Cascade)
   userId      String? @db.Uuid
   token       String @unique
-  expiresAt   Datetime?
+  expiresAt   DateTime?
   instagramId String? @unique
 }
-
 
 model Automation{
   id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name      String @default("Untitled")
-  createdAt Datetime @default(now())
+  createdAt DateTime @default(now())
   active    Boolean @default(false) 
+  trigger   Trigger[]
+  listener  Listerner?
+  posts     Post[]
+  dms       Dms[]
   User      User? @relation(fields:[userId], references:[id], onDelete:Cascade)
   userId    String? @db.Uuid
+  keywords  Keyword[]
+}
+
+model Dms{
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  Automation    Automation? @relation(fields:[automationId], references:[id])
+  automationId  String? @db.Uuid
+  createdAt     DateTime @default(now())
+  senderId      String?
+  reciever      String?
+  message       String?
+}
+
+model Post{
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId        String
+  caption       String?
+  media         String
+  mediaType     MEDIATYPE @default(IMAGE)
+  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:cascade)
+  automationId  String? @db.Uuid
+}
+
+model Listerner{
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:cascade)
+  automationId  String? @db.Uuid
+  listener      LISTENERS @default(MESSAGE)
+  prompt        String
+  commentReply  String?
+  dmCount       Int @default(0)
+  commentCount  Int @default(0)
+}
+
+model Trigger{
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type          String
+  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:cascade)
+  automationId  String? @db.Uuid
+}
+
+model Keyword{
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  word          String
+  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:cascade)
+  automationId  String? @db.Uuid
+
+  @@unique([automationId,word])
+}
+
+enum SUBSCRIPTION_PLAN{
+  PRO
+  FREE
+}
+
+enum INTEGRATIONS{
+  INSTAGRAM
+  LINKEDIN
+}
+
+enum MEDIATYPE{
+  IMAGE
+  VIDEO
+  CAROUSEL_ALBUM
+}
+
+enum LISTENERS{
+  SMARTAI
+  MESSAGE
 }
