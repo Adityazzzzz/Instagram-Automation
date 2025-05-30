@@ -23,7 +23,7 @@ model User{
 model Subscription{
   id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   User        User? @relation(fields:[userId], references:[id], onDelete:Cascade)
-  userId      String? @db.Uuid
+  userId      String? @db.Uuid @unique 
   createdAt   DateTime @default(now())
   plan        SUBSCRIPTION_PLAN @default(FREE)
   updatedAt   DateTime @default(now())
@@ -71,14 +71,14 @@ model Post{
   caption       String?
   media         String
   mediaType     MEDIATYPE @default(IMAGE)
-  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:cascade)
+  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:Cascade)
   automationId  String? @db.Uuid
 }
 
 model Listerner{
   id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:cascade)
-  automationId  String? @db.Uuid
+  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:Cascade)
+  automationId  String? @db.Uuid @unique 
   listener      LISTENERS @default(MESSAGE)
   prompt        String
   commentReply  String?
@@ -89,14 +89,14 @@ model Listerner{
 model Trigger{
   id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   type          String
-  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:cascade)
+  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:Cascade)
   automationId  String? @db.Uuid
 }
 
 model Keyword{
   id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   word          String
-  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:cascade)
+  Automation    Automation? @relation(fields:[automationId], references:[id], onDelete:Cascade)
   automationId  String? @db.Uuid
 
   @@unique([automationId,word])
